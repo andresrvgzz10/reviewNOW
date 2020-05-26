@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Approve content and reviews</title>
+
+<!-- CSS only -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+</head>
+
+
+
+    <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/pages/home.html">reviewNOW</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item ">
+            <a class="nav-link" href="./home.html">Home
+              
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="./about.html">About
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             My Account
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <div class="controllerMenu">
+                
+              </div>
+              <a class="dropdown-item" href="./createContent.html">Create</a>
+              <a class="dropdown-item" href="./toWatch.html">To Watch</a>
+              <a class="dropdown-item" href="./alreadyWatch.html">Already Watch</a>
+              <div class="text-center">
+                <button onclick="logout()" type="button" class="btn btn-danger center-block">Logout</button> 
+                </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <body>
+
+    <div class="jumbotron p-3 p-md-5 text-white rounded bg-dark">
+      <div class="col-md-6 px-0">
+        <h1 class="display-4 font-italic">Configuration</h1>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <h5 class="display-6 ">CONTENT</h5>
+      </div>
+
+    <div class="d-flex justify-content-center">
+      <div class="createReview" style="width: 900px;">
+      <table class="table">
+      <thead class="thead-dark">
+          <tr>
+          <th scope="col">#</th>
+          <th scope="col">Title</th>
+          <th scope="col">Type</th>
+          <th scope="col">User Upload</th>
+          <th scope="col">Approve Content</th>
+      </tr>
+      </thead>
+      <tbody class="pendingContent">
+      </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center">
+    <h5 class="display-6 ">REVIEWS</h5>
+  </div>
+
+  <div class="d-flex justify-content-center">
+    <div class="createReview" style="width: 900px;">
+    <table class="table">
+    <thead class="thead-dark">
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">Title</th>
+        <th scope="col">Review</th>
+        <th scope="col">User Upload</th>
+        <th scope="col">Approve Content</th>
+    </tr>
+    </thead>
+    <tbody class="pendingReviews">
+    </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+</body>
+
+<script src="../js/controllerMenu.js"></script>
+<script src="../js/admin.js"></script>
+<script src="../js/logout.js"></script>
+
+  <!-- JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+
+</html>
