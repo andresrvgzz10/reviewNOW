@@ -10,6 +10,8 @@ let settings = {
 
 fetch(url,settings)
     .then( response => {
+
+        console.log(response)
         if( response.ok ){
             return response.json();
         }
@@ -17,6 +19,7 @@ fetch(url,settings)
     })
     .then (responseJson => {
         console.log(responseJson);
+        //return responseJson.json();
     })
     .catch(err => {
         console.log(err);

@@ -38,6 +38,10 @@ function fetchLogin(email,password){
 
 
             window.location.href = "/pages/home.html"
+            //return responseJSON.json();
+            
+
+
         })
         .catch( err => {
             results.innerHTML = `<p class="text-danger"> ${err.message} </p>`;
