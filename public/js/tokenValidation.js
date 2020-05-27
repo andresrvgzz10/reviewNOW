@@ -23,5 +23,5 @@ fetch(url,settings)
     })
     .catch(err => {
         console.log(err);
-        //window.location.href ="/index.html"
+        window.location.href ="/index.html"
     })

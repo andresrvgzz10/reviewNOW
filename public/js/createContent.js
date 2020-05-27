@@ -30,8 +30,10 @@ function fetchCreate(title,type,img,status,email,description){
         })
         .then (responseJson => {
             console.log(responseJson);
+            alert("Content create succesful - Wating for approval")
         })
         .catch(err => {
+            console.log("Te title already exist");
             console.log(err);
             //window.location.href ="/index.html"
         })

@@ -5,8 +5,7 @@ const mongoose = require('mongoose');
 const contentCollectionSchema = mongoose.Schema({
     title : {
         type: String,
-        require: true,
-        unique: true
+        require: true
     },
     description : {
         type: String,
@@ -76,9 +75,20 @@ const Content = {
                     throw new Error( err );
                 });
     },
-    approveContent : function(title){
+    approveContent : function(title,id){
         return contentCollection
-                .updateOne({"title": title},{$set: {status:"1"}})
+                .updateOne({"title": title , "_id": id},{$set: {status:"1"}})
+                .then( contentAprroved => {
+                    return contentAprroved;
+                })
+                .catch( err => {
+                    throw new Error( err );
+                });
+
+    },
+    deleteContent : function(id){
+        return contentCollection
+                .updateOne({"_id": id},{$set: {status:"3"}})
                 .then( contentAprroved => {
                     return contentAprroved;
                 })

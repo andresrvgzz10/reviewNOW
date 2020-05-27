@@ -19,15 +19,16 @@ function fetchContent(){
         .then (responseJson => {
             console.log(responseJson);
 
-            let flag = '<p class="text-danger">Revision</p>';
+            
             for(let i = 0; i < responseJson.length;i++)
             {
+                let flag = '<p class="text-danger">Revision</p>';
                 if(responseJson[i].status === "1")
                 {
                     flag = '<p class="text-success">Approved</p>';
                 }
-                else{
-                    flag = '<p class="text-danger">Revision</p>';
+                if(responseJson[i].status === "3"){
+                    flag = '<p class="text-secondary">Not approved</p>';
                 }
                 content.innerHTML += `
                     <tr>
@@ -68,15 +69,16 @@ function fetchReviews(){
         .then (responseJson => {
             console.log(responseJson);
 
-            let flag = '<p class="text-danger">Revision</p>';
+            
             for(let i = 0; i < responseJson.length;i++)
             {
+                let flag = '<p class="text-danger">Revision</p>';
                 if(responseJson[i].status === "1")
                 {
                     flag = '<p class="text-success">Approved</p>';
                 }
-                else{
-                    flag = '<p class="text-danger">Revision</p>';
+                if(responseJson[i].status === "3"){
+                    flag = '<p class="text-danger">Not approved</p>';
                 }
                 content.innerHTML += `
                     <tr>

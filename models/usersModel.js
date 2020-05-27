@@ -16,17 +16,6 @@ const usersCollectionSchema = mongoose.Schema({
         type: String,
         require: true
     },
-    toWatch : [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'contents'
-        }
-    ],
-    alreadyWatch : [
-    {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'contents'
-    }],
     status:{
         type: String,
         require: true
@@ -75,6 +64,8 @@ const Users = {
     {
         return usersCollection
                 .findOne({"email": email})
+                .populate( 'toWatch' , ['title'])
+                .populate( 'alreadyWatch' , ['title'])
                 .then(user => {
                     return user;
                 })
@@ -82,21 +73,6 @@ const Users = {
                 .catch( error => {
                     return error
                 });
-    },
-    insertAlreadyWatch : function(user,content)
-    {
-    },
-    insertToWatch : function(user,content)
-    {
-
-    },
-    deleteFromAlreadyWatch : function(user,content)
-    {
-
-    },
-    deleteFromToWatch : function(user,content)
-    {
-
     }
 }
 

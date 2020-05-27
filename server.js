@@ -6,6 +6,8 @@ const { DATABASE_URL, PORT, SECRET_TOKEN } = require( './config' );
 const { Users } = require('./models/usersModel')
 const { Content } = require('./models/contentModel')
 const { Review } = require('./models/reviewsModel')
+const { ToWatch } = require('./models/toWatchModel')
+const { AlreadyWatch } = require('./models/alreadyWatchModel')
 const mongoose = require('mongoose');
 const cors = require( './middleware/cors' );
 const bcrypt = require('bcryptjs');
@@ -36,7 +38,7 @@ app.get('/api/users/validate-token', (req, res) => {
        }
 
         console.log(decoded);
-        return res.status(200).end().json({
+        return res.status(200).json({
             name: decoded.name,
             email : decoded.email,
             status: decoded.status
@@ -288,22 +290,112 @@ app.get('/getAllReviews', (req,res) => {
         })
 })
 
+//Get All Reviews
+app.get('/getReviewByUserandContent', (req,res) => {
+
+    let title = req.query.title;
+
+    let email = req.query.email;
+
+    if( !email || !title )
+    {
+        res.statusMessage = "Need to enter all the params";
+        return res.status( 400 ).end();
+    }
+
+    Content
+        .getContentByTitle(title)
+        .then(content => {
+            console.log(content)
+            Users
+                .getUserByEmail(email)
+                .then(user => {
+
+                    Review
+                        .getReviewByUserAndContent(user._id,content._id)
+                        .then(found => {
+                            return res.status(200).json(found);
+                        })
+                        .catch( err => {
+                            res.statusMessage = err.message;
+                            return res.status( 400 ).end();
+                        })
+                })
+                .catch( err => {
+                    res.statusMessage = err.message;
+                    return res.status( 400 ).end();
+                })
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+})
+
 
 
 //Change content from 0 to 1 THIS IS APPROVED (UPDATE)
 app.patch('/approveContent' , jsonParser, (req,res) => {
 
     let title = req.body.title;
+    let id = req.body._id;
 
-    if( !title)
+    if( !title || !id )
     {
         res.statusMessage = "Need to put all the params";
         return res.status( 400 ).end();
     }
 
     Content
-        .approveContent(title)
+        .approveContent(title, id)
+        .then(contentApproved => {
+            return res.status(200).json(contentApproved);
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+})
+
+//delete content
+app.patch('/deleteContent' , jsonParser, (req,res) => {
+
+    let id = req.body._id;
+
+    if(!id )
+    {
+        res.statusMessage = "Need to put all the params";
+        return res.status( 400 ).end();
+    }
+
+    Content
+        .deleteContent(id)
+        .then(contentDelete => {
+            return res.status(200).json(contentDelete);
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+})
+
+//approve review
+app.patch('/approveReview' , jsonParser, (req,res) => {
+
+    let id = req.body._id;
+
+    if( !id )
+    {
+        res.statusMessage = "Need to put all the params";
+        return res.status( 400 ).end();
+    }
+
+    Review
+        .approveReview(id)
         .then(reviewApproved => {
+            console.log(reviewApproved)
             return res.status(200).json(reviewApproved);
         })
         .catch( err => {
@@ -313,63 +405,46 @@ app.patch('/approveContent' , jsonParser, (req,res) => {
 
 })
 
-//Change review from 0 to 1 THIS IS APPROVED (UPDATE)
-app.patch('/approveReview' , jsonParser, (req,res) => {
+//delete review
+app.patch('/deleteReview' , jsonParser, (req,res) => {
 
-    const { title, email} = req.body;
-    if( !title || !email)
+    let id = req.body._id;
+
+    if( !id )
     {
         res.statusMessage = "Need to put all the params";
         return res.status( 400 ).end();
     }
 
-    Users
-        .userByEmail(email)
-        .then(user => {
-
-            if(user == null)
-            {
-                res.statusMessage = "No user found";
-                return res.status( 400 ).end();
-            }
-            Content
-                .getContentByTitle(title)
-                .then(content => {
-
-                    if(content == null)
-                    {
-                        res.statusMessage = "No content found";
-                        return res.status( 400 ).end();
-                    }
-
-                    Review
-                        .approveReview(user._id,content._id)
-                        .then(approvedReview => {
-                            if(approvedReview == null)
-                            {
-                                res.statusMessage = "No content found";
-                                return res.status( 400 ).end();
-                            }
-
-                            return res.status(200).json(approvedReview);
-                        })
-                        .catch( err => {
-                            res.statusMessage = err.message;
-                            return res.status( 400 ).end();
-                        })
-
-                })
-                .catch( err => {
-                    res.statusMessage = err.message;
-                    return res.status( 400 ).end();
-                })
-
+    Review
+        .deleteReview(id)
+        .then(reviewDeleted => {
+            return res.status(200).json(reviewDeleted);
         })
         .catch( err => {
             res.statusMessage = err.message;
             return res.status( 400 ).end();
         })
-    
+
+})
+
+
+
+//Change review from 0 to 1 THIS IS APPROVED (UPDATE)
+app.patch('/approveReviewByID',jsonParser,(req,res) => {
+
+    let id= req.body._id;
+
+    Review
+        .approveReview(id)
+        .then(reviewApproved => {
+            return res.status(200).json(reviewApproved);
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
 })
 
 app.get('/allNotApproveReviews', (req,res) => {
@@ -571,6 +646,299 @@ app.get('/reviewsByUser', (req,res) => {
 
 })
 
+app.get('/userGetInformation', (req,res) => {
+
+    let email = req.query.email;
+
+    if( !email )
+    {
+        res.statusMessage = "Need to enter email";
+        return res.status( 400 ).end();
+    }
+
+    Users
+        .getUserByEmail(email)
+        .then(user => {
+            return res.status(200).json(user);
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+})
+
+app.get('/getContentToWatchByEmailUser', (req,res) => {
+
+    let email = req.query.email;
+
+    if( !email )
+    {
+        res.statusMessage = "Need to enter email";
+        return res.status( 400 ).end();
+    }
+       
+    Users
+        .getUserByEmail(email)
+        .then(user => {
+            ToWatch
+                .getAllToWatchByUser(user._id)
+                .then(allContent => {
+                    return res.status(200).json(allContent);
+                })
+                .catch( err => {
+                    res.statusMessage = err.message;
+                    return res.status( 400 ).end();
+                })
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+    
+})
+
+app.get('/getContentAlreadyWatchByEmailUser', (req,res) => {
+
+    let email = req.query.email;
+
+    if( !email )
+    {
+        res.statusMessage = "Need to enter email";
+        return res.status( 400 ).end();
+    }
+       
+    Users
+        .getUserByEmail(email)
+        .then(user => {
+            AlreadyWatch
+                .getAlreadyWatchByUser(user._id)
+                .then(allContent => {
+                    return res.status(200).json(allContent);
+                })
+                .catch( err => {
+                    res.statusMessage = err.message;
+                    return res.status( 400 ).end();
+                })
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+    
+})
+
+app.post('/addContentToWatch', jsonParser, (req,res) => {
+
+    const {title, email} = req.body;
+
+    if( !email || !title )
+    {
+        res.statusMessage = "Need to enter email";
+        return res.status( 400 ).end();
+    }
+
+    Content
+        .getContentByTitle(title)
+        .then(content => {
+            console.log(content)
+            Users
+                .getUserByEmail(email)
+                .then(user => {
+
+                    const newContentToWatch = {
+                        user: user._id,
+                        content: content._id,
+                    }
+                    console.log(newContentToWatch)
+                    ToWatch
+                        .insertToWatch(newContentToWatch)
+                        .then(newContentAdded => {
+                            return res.status(200).json(newContentAdded);
+                        })
+                        .catch( err => {
+                            res.statusMessage = err.message;
+                            return res.status( 400 ).end();
+                        })
+                })
+                .catch( err => {
+                    res.statusMessage = err.message;
+                    return res.status( 400 ).end();
+                })
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+})
+
+app.post('/addContentToAlreadyWatch', jsonParser, (req,res) => {
+    
+    const { title, email} = req.body;
+
+    if( !email || !title )
+    {
+        res.statusMessage = "Need to enter email";
+        return res.status( 400 ).end();
+    }
+
+    Content
+        .getContentByTitle(title)
+        .then(content => {
+            console.log(content._id)
+            Users
+                .getUserByEmail(email)
+                .then(user => {
+
+                    console.log(user._id)
+
+                    const newContentAlreadyWatch = {
+                        user: user._id,
+                        content: content._id,
+                    }
+                    AlreadyWatch
+                        .insertAlreadyWatch(newContentAlreadyWatch)
+                        .then(newContentAdded => {
+                            return res.status(200).json(newContentAdded);
+                        })
+                        .catch( err => {
+                            res.statusMessage = err.message;
+                            return res.status( 400 ).end();
+                        })
+                })
+                .catch( err => {
+                    res.statusMessage = err.message;
+                    return res.status( 400 ).end();
+                })
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+})
+
+app.delete('/deleteToWatchByID', (req,res) => {
+
+    let id = req.query.id;
+
+    ToWatch
+        .deleteFromToWatch(id)
+        .then(deleted => {
+            return res.status(200).json(deleted);
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+
+})
+
+app.delete('/deleteAlreadyWatchByID', (req,res) => {
+
+    let id = req.query.id;
+
+    AlreadyWatch
+        .deleteFromAlreadyWatch(id)
+        .then(deleted => {
+            return res.status(200).json(deleted);
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+
+})
+
+app.get('/getAlreadyWatchContentByUser', (req,res) => {
+
+    let title = req.query.title;
+    let email = req.query.email;
+
+    if( !email || !title )
+    {
+        res.statusMessage = "Need to enter email";
+        return res.status( 400 ).end();
+    }
+
+    Content
+        .getContentByTitle(title)
+        .then(content => {
+
+
+            Users
+                .getUserByEmail(email)
+                .then(user => {
+
+
+                    AlreadyWatch
+                        .boolAlreadyWatchContentAndUser(user._id,content._id)
+                        .then(newContentAdded => {
+                            return res.status(200).json(newContentAdded);
+                        })
+                        .catch( err => {
+                            res.statusMessage = err.message;
+                            return res.status( 400 ).end();
+                        })
+                })
+                .catch( err => {
+                    res.statusMessage = err.message;
+                    return res.status( 400 ).end();
+                })
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+
+})
+
+app.get('/getToWatchContentByUser', (req,res) => {
+
+    let title = req.query.title;
+    let email = req.query.email;
+
+    if( !email || !title )
+    {
+        res.statusMessage = "Need to enter email";
+        return res.status( 400 ).end();
+    }
+
+    Content
+        .getContentByTitle(title)
+        .then(content => {
+            console.log(content)
+            Users
+                .getUserByEmail(email)
+                .then(user => {
+
+                    ToWatch
+                        .boolToWatchContentAndUser(user._id,content._id)
+                        .then(newContentAdded => {
+                            return res.status(200).json(newContentAdded);
+                        })
+                        .catch( err => {
+                            res.statusMessage = err.message;
+                            return res.status( 400 ).end();
+                        })
+                })
+                .catch( err => {
+                    res.statusMessage = err.message;
+                    return res.status( 400 ).end();
+                })
+        })
+        .catch( err => {
+            res.statusMessage = err.message;
+            return res.status( 400 ).end();
+        })
+
+})
 
 app.listen(PORT, () => {
 

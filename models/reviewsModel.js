@@ -6,8 +6,7 @@ const reviewsCollectionSchema = mongoose.Schema({
     user : {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
-        require: true,
-        unique: true
+        require: true
     },
     content : {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,21 +24,23 @@ const reviewsCollectionSchema = mongoose.Schema({
 })
 
 
-const contentCollection = mongoose.model( 'reviews' , reviewsCollectionSchema);
+const reviewCollection = mongoose.model( 'reviews' , reviewsCollectionSchema);
 
 const Review = {
     createReview : function( newReview ){
-        return contentCollection
+        return reviewCollection
                 .create( newReview )
                 .then( createdReview => {
+                    console.log(createdReview)
                     return createdReview;
                 })
                 .catch( err => {
+                    console.log(err)
                     throw new Error( err );
                 });
     },
     getAllReviews : function(){
-        return contentCollection
+        return reviewCollection
                 .find()
                 .populate( 'user' , ['name'])
                 .populate( 'content' , ['title'])
@@ -51,7 +52,7 @@ const Review = {
                 });
     },
     getAllReviewsByUser : function(id){
-        return contentCollection
+        return reviewCollection
                 .find({"user": id})
                 .populate( 'user' , ['name'])
                 .populate( 'content' , ['title'])
@@ -63,7 +64,7 @@ const Review = {
                 });
     },
     getAllNotApproveReviews : function(){
-        return contentCollection
+        return reviewCollection
                 .find({"status":"0"})
                 .populate( 'user' , ['name'])
                 .populate( 'content' , ['title'])
@@ -75,7 +76,7 @@ const Review = {
                 });
     },
     approveReview : function(user,content){
-        return contentCollection
+        return reviewCollection
                 .updateOne({"user": user, "content":content },{$set: {status:"1"}})
                 .then( reviewAprroved => {
                     return reviewAprroved;
@@ -86,7 +87,7 @@ const Review = {
 
     },
     getReviewsByIdContent : function(id){
-        return contentCollection
+        return reviewCollection
                 .find({"content":id})
                 .populate( 'user' , ['name'])
                 .populate( 'content' , ['title'])
@@ -99,7 +100,7 @@ const Review = {
 
     },
     getReviewsByIdContentApproved : function(id){
-        return contentCollection
+        return reviewCollection
                 .find({"content": id,"status":"1"})
                 .populate( 'user' , ['name'])
                 .populate( 'content' , ['title'])
@@ -110,6 +111,42 @@ const Review = {
                     throw new Error( err );
                 });
 
+    },
+    approveReview : function(id){
+        return reviewCollection
+                .updateOne({"_id": id},{$set: {status:"1"}})
+                .populate( 'user' , ['name'])
+                .populate( 'content' , ['title'])
+                .then( reviews => {
+                    return reviews;
+                })
+                .catch( err => {
+                    throw new Error( err );
+                });
+
+    },
+    deleteReview : function(id){
+        return reviewCollection
+                .updateOne({"_id": id},{$set: {status:"3"}})
+                .populate( 'user' , ['name'])
+                .populate( 'content' , ['title'])
+                .then( reviews => {
+                    return reviews;
+                })
+                .catch( err => {
+                    throw new Error( err );
+                });
+
+    },
+    getReviewByUserAndContent: function(userID,ContentID){
+        return reviewCollection
+                .findOne({"user": userID, "content":ContentID})
+                .then( found => {
+                    return found;
+                })
+                .catch( err => {
+                    throw new Error( err );
+                });
     }
 
     

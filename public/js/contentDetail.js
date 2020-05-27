@@ -14,8 +14,6 @@ function fetchReview(comment){
     else{
         status = "0";
     }
-
-
     let url = '/createReview';
     let data = {
         email,
@@ -23,6 +21,7 @@ function fetchReview(comment){
         title,
         comment
     }
+    console.log(data)
     let settings= {
         method: 'POST',
         headers : {
@@ -41,10 +40,12 @@ function fetchReview(comment){
         })
         .then (responseJson => {
             console.log(responseJson);
+            alert("Wait to see your review here - check your notification account");
             loadReviewsContent();
         })
         .catch(err => {
             console.log(err);
+            alert("You cant review more than one time this content");
             //window.location.href ="/index.html"
         })
 }
@@ -55,7 +56,7 @@ function watchReview(){
 
 
     reviewBtn.addEventListener('submit', (event) => {
-        //event.preventDefault();
+        event.preventDefault();
         console.log("Prepargin review");
 
         let comment = document.getElementById("commentReview").value;
@@ -71,7 +72,7 @@ function watchReview(){
 
         validation.innerHTML = "";
 
-        fetchReview(comment);
+        validateReview(comment);
 
 
     });
@@ -79,8 +80,7 @@ function watchReview(){
 
 function loadReviewsContent()
 {
-    console.log(localStorage.getItem('title'))
-    let title = localStorage.getItem('title');
+    let title = localStorage.getItem("title");
     let url = '/getReviewsApprovedByTitleContent?title='+title;
 
     let settings = {
@@ -121,6 +121,34 @@ function loadReviewsContent()
         })
 }
 
+function validateReview(comment){
+    let title = localStorage.getItem("title");
+    let url = '/getReviewByUserandContent?title='+title+"&email=" +localStorage.getItem("email");
+    let settings = {
+        method: 'GET'
+    }
+    fetch(url,settings)
+        .then( response => {
+            if( response.ok ){
+                return response.json();
+            }
+            throw new Error( response.statusText );
+        })
+        .then (responseJson => {
+            console.log(responseJson);
+            let resul = responseJson;
+            if(!resul)
+            {
+                fetchReview(comment);
+            }
+            else{
+               alert("You cant write more reviews");
+            }
+        })
+        .catch(err => {
+
+        })
+}
 
 function loadContent()
 {
