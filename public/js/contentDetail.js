@@ -40,13 +40,17 @@ function fetchReview(comment){
         })
         .then (responseJson => {
             console.log(responseJson);
-            alert("Wait to see your review here - check your notification account");
+            if(status === "0")
+            {
+                alert("Wait to see your review here - check your notification account");
+            } 
             loadReviewsContent();
         })
         .catch(err => {
             console.log(err);
             alert("You cant review more than one time this content");
             //window.location.href ="/index.html"
+            location.reload();
         })
 }
 
@@ -188,8 +192,8 @@ function loadContent()
                         <strong class="d-inline-block mb-2 text-success" >${responseJson.type}</strong>
                         <h3 class="mb-0" id="title" value="${responseJson.title}">${responseJson.title}</h3>
                         <p class="card-text mb-auto">${responseJson.description}</p>
-                        </div>
                         <img class="card-img-right d-none d-md-block" alt="Thumbnail [200x250]" style="width: 200px; height: 250px;" src="${responseJson.image}" data-holder-rendered="true">
+                        </div>
             </div>
             </div>
             </div>
