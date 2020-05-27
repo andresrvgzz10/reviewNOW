@@ -147,6 +147,7 @@ function validateReview(comment){
             }
             else{
                alert("You cant write more reviews");
+               location.reload();
             }
         })
         .catch(err => {
