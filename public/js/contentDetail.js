@@ -193,8 +193,9 @@ function loadContent()
                         <strong class="d-inline-block mb-2 text-success" >${responseJson.type}</strong>
                         <h3 class="mb-0" id="title" value="${responseJson.title}">${responseJson.title}</h3>
                         <p class="card-text mb-auto">${responseJson.description}</p>
-                        <img class="card-img-right d-none d-md-block" alt="Thumbnail [200x250]" style="width: 200px; height: 250px;" src="${responseJson.image}" data-holder-rendered="true">
                         </div>
+                        <img class="card-img-right d-none d-md-block" alt="Thumbnail [200x250]" style="width: 200px; height: 250px;" src="${responseJson.image}" data-holder-rendered="true">
+
             </div>
             </div>
             </div>
