@@ -43,6 +43,7 @@ function fetchReview(comment){
             if(status === "0")
             {
                 alert("Wait to see your review here - check your notification account");
+                location.reload();
             } 
             loadReviewsContent();
         })
